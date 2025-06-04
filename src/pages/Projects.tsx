@@ -34,7 +34,7 @@ const Projects = () => {
       id: "2",
       title: "CyberSecurity Website",
       description: "A cutting-edge cybersecurity platform offering advanced software tools, real-time threat analyzers, and interactive dashboards. Designed to protect digital assets, detect anomalies, and provide deep insights into system vulnerabilities—all in one unified interface.",
-      techStack: ["React", "TypeScript", "Node.Js", "Tailwind CSS"],
+      techStack: ["React", "TypeScript", "Node.Js", "Tailwind CSS",  ,"Vite", "ShadCN"],
       githubUrl: "https://github.com/Aritra0101x8e2",
       liveUrl: "https://d-a-r-k-w-a-v-e-aritra.vercel.app/",
       image: "/P3.png"
@@ -53,7 +53,7 @@ const Projects = () => {
       id: "4",
       title: "Kolkata Metro",
       description: "A real-time Kolkata Metro tracking platform featuring live train locations, schedules, and route maps. Designed for commuters, with accurate updates, mobile-friendly design, and full coverage of all metro lines",
-      techStack: ["MapBox API", "JavaScript", "React MapMox", "KolkataMetro API"],
+      techStack: ["MapBox API", "JavaScript", "React MapMox", "KolkataMetro API",  ,"Vite", "ShadCN"],
       githubUrl: "https://github.com/Aritra0101x8e2",
       liveUrl: "https://kolkata-metro-aritra-kundu.vercel.app/", 
       image: "/P4.png"
@@ -71,7 +71,7 @@ const Projects = () => {
       id: "6",
       title: "UPI Fraud Monitoring Dashboard",
       description: "A real-time UPI fraud monitoring dashboard designed to detect suspicious transactions, analyze behavioral patterns, and alert anomalies instantly. Empowering secure digital payments with AI-driven insights and actionable intelligence",
-      techStack: ["HTML", "JavaScript", "CSS" , "CSS-JS Scroll Amnimations"],
+      techStack: ["React", "Tailwind CSS", "JavaScript" ,"Vite", "ShadCN"],
       githubUrl: "https://github.com/Aritra0101x8e2",
       liveUrl: "https://prysm-darkwave-aritra.vercel.app/", 
       image: "/P6.png"
