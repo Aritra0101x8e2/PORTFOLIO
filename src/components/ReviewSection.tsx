@@ -34,24 +34,24 @@ const ReviewSection = () => {
     comment: "",
   });
 
-  // Load reviews from localStorage on mount
+  // Fetch reviews from backend API on mount
   useEffect(() => {
-    const saved = localStorage.getItem("portfolioReviews");
-    if (saved) {
-      const parsed: Review[] = JSON.parse(saved);
-      if (Array.isArray(parsed)) {
-        setReviews(parsed.filter(r => r.name && r.comment)); // Avoid corrupted entries
-      }
-    }
+    fetch("http://localhost:5000/reviews")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          // Basic validation to avoid corrupted entries
+          setReviews(data.filter((r) => r.name && r.comment));
+        }
+      })
+      .catch(() => {
+        setReviews([]);
+      });
   }, []);
 
-  const saveReviews = (updated: Review[]) => {
-    localStorage.setItem("portfolioReviews", JSON.stringify(updated));
-    setReviews(updated);
-  };
-
+  // Submit new review to backend API
   const handleSubmitReview = () => {
-    const { name, role, comment } = newReview;
+    const { name, role, rating, comment } = newReview;
     if (!name.trim() || !role.trim() || !comment.trim()) {
       toast({
         title: "Error",
@@ -61,22 +61,38 @@ const ReviewSection = () => {
       return;
     }
 
-    const reviewToAdd: Review = {
-      id: Date.now().toString(),
+    const reviewToAdd = {
       ...newReview,
       date: new Date().toISOString().split("T")[0],
     };
 
-    const updatedReviews = [reviewToAdd, ...reviews];
-    saveReviews(updatedReviews);
-
-    toast({
-      title: "Success",
-      description: "Thank you for your review!",
-    });
-
-    setNewReview({ name: "", role: "", rating: 5, comment: "" });
-    setIsDialogOpen(false);
+    fetch("http://localhost:5000/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(reviewToAdd),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to submit review");
+        return res.json();
+      })
+      .then((savedReview: Review) => {
+        setReviews((prev) => [savedReview, ...prev]);
+        toast({
+          title: "Success",
+          description: "Thank you for your review!",
+        });
+        setNewReview({ name: "", role: "", rating: 5, comment: "" });
+        setIsDialogOpen(false);
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to submit review.",
+          variant: "destructive",
+        });
+      });
   };
 
   const renderStars = (
@@ -184,7 +200,10 @@ const ReviewSection = () => {
                       rows={4}
                     />
                   </div>
-                  <Button onClick={handleSubmitReview} className="cyber-button w-full">
+                  <Button
+                    onClick={handleSubmitReview}
+                    className="cyber-button w-full"
+                  >
                     Submit Review
                   </Button>
                 </div>
@@ -206,7 +225,6 @@ const ReviewSection = () => {
                 style={{ width: `${(reviews.length + 1) * 400}px` }}
               >
                 {reviews.map((review, idx) => (
-
                   <motion.div
                     key={`${review.id}-${idx}`}
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -254,3 +272,4 @@ const ReviewSection = () => {
 };
 
 export default ReviewSection;
+
