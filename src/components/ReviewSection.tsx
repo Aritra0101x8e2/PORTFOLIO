@@ -1,0 +1,267 @@
+
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Star, Plus, User } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+
+interface Review {
+  id: string;
+  name: string;
+  role: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+const ReviewSection = () => {
+  const [reviews, setReviews] = useState<Review[]>([
+    // {
+    //   id: "1",
+    //   name: "John Doe",
+    //   role: "Product Manager",
+    //   rating: 5,
+    //   comment: "Aritra delivered exceptional work on our web application. His attention to detail and technical expertise made the project a huge success.",
+    //   date: "2024-01-15"
+    // },
+    // {
+    //   id: "2",
+    //   name: "Sarah Johnson",
+    //   role: "Tech Lead",
+    //   rating: 5,
+    //   comment: "Outstanding developer with great communication skills. The code quality was excellent and the project was delivered on time.",
+    //   date: "2024-01-10"
+    // },
+    // {
+    //   id: "3",
+    //   name: "Mike Chen",
+    //   role: "Startup Founder",
+    //   rating: 4,
+    //   comment: "Aritra helped us build our MVP from scratch. His full-stack expertise and modern approach were exactly what we needed.",
+    //   date: "2024-01-05"
+    // },
+    // {
+    //   id: "4",
+    //   name: "Emma Williams",
+    //   role: "Design Director",
+    //   rating: 5,
+    //   comment: "Perfect implementation of our designs! Aritra understood our vision and brought it to life with clean, maintainable code.",
+    //   date: "2023-12-28"
+    // }
+  ]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newReview, setNewReview] = useState({
+    name: "",
+    role: "",
+    rating: 5,
+    comment: ""
+  });
+
+  useEffect(() => {
+    const savedReviews = localStorage.getItem("portfolioReviews");
+    if (savedReviews) {
+      setReviews(JSON.parse(savedReviews));
+    }
+  }, []);
+
+  const saveReviews = (updatedReviews: Review[]) => {
+    localStorage.setItem("portfolioReviews", JSON.stringify(updatedReviews));
+    setReviews(updatedReviews);
+  };
+
+  const handleSubmitReview = () => {
+    if (!newReview.name.trim() || !newReview.role.trim() || !newReview.comment.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reviewToAdd: Review = {
+      id: Date.now().toString(),
+      ...newReview,
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    const updatedReviews = [reviewToAdd, ...reviews];
+    saveReviews(updatedReviews);
+
+    toast({
+      title: "Success",
+      description: "Thank you for your review! It has been added successfully.",
+    });
+
+    // Reset form
+    setNewReview({
+      name: "",
+      role: "",
+      rating: 5,
+      comment: ""
+    });
+    setIsDialogOpen(false);
+  };
+
+  const renderStars = (rating: number, interactive = false, onRatingChange?: (rating: number) => void) => {
+    return (
+      <div className="flex space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-5 h-5 ${
+              star <= rating
+                ? "text-yellow-400 fill-current"
+                : "text-gray-400"
+            } ${interactive ? "cursor-pointer hover:text-yellow-300 transition-colors" : ""}`}
+            onClick={() => interactive && onRatingChange && onRatingChange(star)}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="py-20 relative overflow-hidden">
+      <div className="absolute inset-0 tech-grid opacity-5"></div>
+      
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-5xl font-orbitron font-bold gradient-text mb-4">
+              Client Reviews
+            </h2>
+            <p className="text-xl text-gray-300 font-exo mb-8">
+              What people say about working with me
+            </p>
+            
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="cyber-button">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Leave a Review
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-slate-900 border-blue-500/30">
+                <DialogHeader>
+                  <DialogTitle className="gradient-text font-orbitron">Add Your Review</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="reviewName">Name</Label>
+                    <Input
+                      id="reviewName"
+                      value={newReview.name}
+                      onChange={(e) => setNewReview(prev => ({ ...prev, name: e.target.value }))}
+                      className="bg-slate-800 border-blue-500/30"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="reviewRole">Role</Label>
+                    <Input
+                      id="reviewRole"
+                      value={newReview.role}
+                      onChange={(e) => setNewReview(prev => ({ ...prev, role: e.target.value }))}
+                      className="bg-slate-800 border-blue-500/30"
+                      placeholder="e.g., Product Manager, Developer"
+                    />
+                  </div>
+                  <div>
+                    <Label>Rating</Label>
+                    <div className="mt-2">
+                      {renderStars(newReview.rating, true, (rating) => 
+                        setNewReview(prev => ({ ...prev, rating }))
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="reviewComment">Review</Label>
+                    <Textarea
+                      id="reviewComment"
+                      value={newReview.comment}
+                      onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+                      className="bg-slate-800 border-blue-500/30"
+                      placeholder="Share your experience..."
+                      rows={4}
+                    />
+                  </div>
+                  <Button onClick={handleSubmitReview} className="cyber-button w-full">
+                    Submit Review
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </motion.div>
+
+          {/* Reviews Carousel */}
+          <div className="relative">
+            <motion.div
+              animate={{ x: [0, -100 * reviews.length] }}
+              transition={{
+                duration: reviews.length * 8,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="flex space-x-6"
+              style={{ width: `${(reviews.length + 1) * 400}px` }}
+            >
+              {[...reviews, ...reviews].map((review, index) => (
+                <motion.div
+                  key={`${review.id}-${index}`}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex-shrink-0 w-80"
+                >
+                  <Card className="cyber-card h-64 hover:border-blue-400/50 transition-all duration-300">
+                    <CardContent className="p-6 h-full flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center">
+                              <User className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="font-orbitron font-semibold text-white">
+                                {review.name}
+                              </h4>
+                              <p className="text-sm text-blue-300 font-exo">
+                                {review.role}
+                              </p>
+                            </div>
+                          </div>
+                          {renderStars(review.rating)}
+                        </div>
+                        <p className="text-gray-300 font-exo text-sm leading-relaxed">
+                          "{review.comment}"
+                        </p>
+                      </div>
+                      <div className="text-xs text-gray-500 font-exo mt-4">
+                        {new Date(review.date).toLocaleDateString()}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ReviewSection;
