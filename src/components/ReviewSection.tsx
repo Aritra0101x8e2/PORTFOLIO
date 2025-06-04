@@ -205,7 +205,8 @@ const ReviewSection = () => {
                 className="flex space-x-6"
                 style={{ width: `${(reviews.length + 1) * 400}px` }}
               >
-                {[...reviews, ...reviews].map((review, idx) => (
+                {reviews.map((review, idx) => (
+
                   <motion.div
                     key={`${review.id}-${idx}`}
                     initial={{ scale: 0.9, opacity: 0 }}
