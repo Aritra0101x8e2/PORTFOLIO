@@ -9,6 +9,7 @@ const Index = () => {
   const skills = [
     "React", "TypeScript", "Javascript", "Tailwind CSS", 
     "Python", "Git", "C", "C++" ,"DSA", "Vite", "ShadCN", "API"
+    "Node.JS" ,"Express.JS", "DBMS", "MongoDB"
   ];
 
   const containerVariants = {
